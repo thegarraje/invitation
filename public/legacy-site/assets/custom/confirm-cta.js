@@ -2,7 +2,7 @@
   // Centralized legacy CTA settings.
   // Edit this object when you need to change the confirm button behavior.
   const SETTINGS = {
-    targetPath: "/confirm/",
+    targetPath: "/confirm",
     buttonLabel: "CONFIRM",
     acceptedLabels: ["vote", "confirm", "vote colour", "vote color"],
     legacyCopy: {
@@ -72,6 +72,17 @@
     window.location.href = SETTINGS.targetPath;
   }
 
+  function forceConfirmHref(element) {
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    if (element.tagName === "A") {
+      element.setAttribute("href", SETTINGS.targetPath);
+      element.setAttribute("target", "_top");
+    }
+  }
+
   function replaceLabelOnce(element) {
     if (!(element instanceof HTMLElement)) {
       return;
@@ -139,9 +150,6 @@
     if (!(element instanceof Element)) {
       return false;
     }
-    if (!isWithinIntroRoot(element)) {
-      return false;
-    }
 
     const label = element.textContent || "";
     const href = (element.getAttribute("href") || "").toLowerCase();
@@ -150,13 +158,15 @@
     );
     const hasVoteLikeLabel = isTargetLabel(label) || /\b(vote|confirm)\b/i.test(label);
     const pointsToLegacyVoteFlow = /\/vote-phase\/home-back\b/.test(href) || /#panton2/.test(href);
+    const pointsToLegacyPickColor = /#pickcolor/.test(href) || /pickcolor-container/.test(href);
 
-    // Keep the matcher strict enough to avoid menu tabs, but tolerant for mobile CTA variants.
-    if (!hasVoteLikeLabel) {
-      return false;
+    // Highlighted vote/confirm CTA or highlighted pickcolor CTA should open confirm form.
+    if (isHighlighted && (hasVoteLikeLabel || pointsToLegacyPickColor)) {
+      return true;
     }
 
-    return isHighlighted || pointsToLegacyVoteFlow;
+    // Keep legacy fallback for old CTA route variants.
+    return hasVoteLikeLabel && pointsToLegacyVoteFlow;
   }
 
   function patchAnyVoteTextNode(node) {
@@ -202,6 +212,13 @@
     });
 
     patchVoteLabelsEverywhere();
+
+    // Ensure legacy highlighted pickcolor anchors always navigate to /confirm.
+    document.querySelectorAll(
+      "a[data-highlight='true'][href*='#pickcolor'], a[data-highlight='true'][href*='pickcolor-container']"
+    ).forEach((node) => {
+      forceConfirmHref(node);
+    });
   }
 
   function getTextNodes(root) {
@@ -466,16 +483,14 @@
       if (!actionElement) {
         return;
       }
-      if (!isWithinIntroRoot(actionElement)) {
-        return;
-      }
       if (!isFormCtaElement(actionElement)) {
         return;
       }
 
       event.preventDefault();
       event.stopPropagation();
-      openFullscreenForm();
+      forceConfirmHref(actionElement);
+      redirectTop();
     },
     true
   );

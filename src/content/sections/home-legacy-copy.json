@@ -1,6 +1,6 @@
 {
   "cta": {
-    "targetPath": "/confirm/",
+    "targetPath": "/confirm",
     "buttonLabel": "CONFIRM",
     "acceptedLabels": ["vote", "confirm", "vote colour", "vote color"]
   },
