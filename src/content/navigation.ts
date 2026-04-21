@@ -3,13 +3,14 @@ export const NAVIGATION_COPY = {
     home: "/",
     instagram: "https://www.instagram.com/vitra"
   },
+  brandLogoSrc: "/assets/brand/american-medical-board.svg",
   tabs: {
     intro: "Intro",
     about: "About",
     colours: "Colours"
   },
   ctaFallback: "Explore",
-  brandLabel: "ABG MEETING",
+  brandLabel: "American Medical Board",
   instagramLabel: "Instagram",
   previousLabel: "Previous",
   nextLabel: "Next"

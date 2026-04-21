@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { RouteScene } from "@/types/content";
 import { NAVIGATION_COPY } from "@/content/navigation";
 
@@ -36,25 +37,15 @@ export function BottomNav({ scene }: BottomNavProps) {
           aria-label={NAVIGATION_COPY.brandLabel}
           className="inline-flex h-[27px] w-[82px] items-center justify-center"
         >
-          <svg
-            viewBox="0 0 82 27"
-            role="img"
-            aria-hidden="true"
-            className="h-full w-full"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <text
-              x="41"
-              y="17.5"
-              textAnchor="middle"
-              fill="rgb(0, 0, 0)"
-              fontFamily="VFutura Bold, VFutura Medium, Arial, sans-serif"
-              fontSize="8.8"
-              fontWeight="700"
-            >
-              {NAVIGATION_COPY.brandLabel}
-            </text>
-          </svg>
+          <Image
+            src={NAVIGATION_COPY.brandLogoSrc}
+            alt={NAVIGATION_COPY.brandLabel}
+            width={82}
+            height={27}
+            className="h-full w-full object-contain"
+            priority
+            draggable={false}
+          />
         </Link>
 
         <Link

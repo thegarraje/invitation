@@ -10,6 +10,11 @@
       manifestPath: "/legacy-site/assets/custom/legacy-copy.json",
       maxObserveMs: 12000
     },
+    brandLogo: {
+      enabled: true,
+      src: "/assets/brand/american-medical-board.svg",
+      alt: "American Medical Board"
+    },
     form: {
       id: "69e6c64b8c8898e1dd0c8b9f",
       host: "https://8ncrc15q.forms.app",
@@ -81,10 +86,136 @@
     element.textContent = SETTINGS.buttonLabel;
   }
 
+  function patchAnyVoteTextNode(node) {
+    if (!(node instanceof HTMLElement)) {
+      return;
+    }
+
+    const label = node.textContent || "";
+    if (!isTargetLabel(label)) {
+      return;
+    }
+
+    node.textContent = SETTINGS.buttonLabel;
+
+    const action = node.closest("a, button, [role='button']");
+    if (action instanceof HTMLAnchorElement) {
+      action.setAttribute("href", SETTINGS.targetPath);
+      action.setAttribute("target", "_top");
+    }
+  }
+
+  function patchVoteLabelsEverywhere() {
+    document.querySelectorAll(".framer-text").forEach((node) => {
+      patchAnyVoteTextNode(node);
+    });
+  }
+
   function runPatchOnce() {
     document.querySelectorAll("a, button, [role='button']").forEach((node) => {
       replaceLabelOnce(node);
     });
+
+    patchVoteLabelsEverywhere();
+    patchLegacyBrandLogo();
+    ensureBrandPatchWatcher();
+  }
+
+  function isLegacyBrandAnchor(anchor) {
+    if (!(anchor instanceof HTMLAnchorElement)) {
+      return false;
+    }
+
+    const text = (anchor.textContent || "").replace(/\s+/g, " ").trim();
+    if (text.length > 0) {
+      return false;
+    }
+
+    const href = anchor.getAttribute("href") || "";
+    const cleanHref = href.split("#")[0];
+    if (!cleanHref.startsWith("/")) {
+      return false;
+    }
+
+    if (cleanHref !== "/" && cleanHref !== "/old-home") {
+      return false;
+    }
+
+    const hasGraphic = Boolean(anchor.querySelector('[data-framer-component-type="SVG"], svg, img'));
+    if (!hasGraphic) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function patchLegacyBrandLogo() {
+    if (!SETTINGS.brandLogo.enabled) {
+      return;
+    }
+
+    const anchors = Array.from(document.querySelectorAll("a"))
+      .filter((anchor) => isLegacyBrandAnchor(anchor));
+
+    for (const anchor of anchors) {
+      if (anchor.getAttribute("data-abg-logo-patched") === "1") {
+        continue;
+      }
+
+      anchor.setAttribute("data-abg-logo-patched", "1");
+      anchor.setAttribute("aria-label", SETTINGS.brandLogo.alt);
+      anchor.textContent = "";
+      anchor.style.display = "inline-flex";
+      anchor.style.alignItems = "center";
+      anchor.style.justifyContent = "center";
+
+      const image = document.createElement("img");
+      image.src = SETTINGS.brandLogo.src;
+      image.alt = SETTINGS.brandLogo.alt;
+      image.decoding = "async";
+      image.loading = "eager";
+      image.draggable = false;
+      image.style.width = "100%";
+      image.style.height = "100%";
+      image.style.objectFit = "contain";
+      image.style.display = "block";
+      anchor.appendChild(image);
+    }
+  }
+
+  let brandPatchWatcherStarted = false;
+
+  function ensureBrandPatchWatcher() {
+    if (brandPatchWatcherStarted || !SETTINGS.brandLogo.enabled) {
+      return;
+    }
+
+    brandPatchWatcherStarted = true;
+    const startedAt = Date.now();
+
+    const observer = new MutationObserver(() => {
+      patchLegacyBrandLogo();
+      if (document.querySelector("[data-abg-logo-patched='1']")) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+
+    const interval = window.setInterval(() => {
+      patchLegacyBrandLogo();
+
+      const isPatched = Boolean(document.querySelector("[data-abg-logo-patched='1']"));
+      const isTimedOut = Date.now() - startedAt > SETTINGS.legacyCopy.maxObserveMs;
+
+      if (isPatched || isTimedOut) {
+        window.clearInterval(interval);
+        observer.disconnect();
+      }
+    }, 300);
   }
 
   function getTextNodes(root) {
