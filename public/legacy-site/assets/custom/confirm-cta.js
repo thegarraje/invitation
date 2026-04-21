@@ -14,6 +14,11 @@
       id: "69e6c64b8c8898e1dd0c8b9f",
       host: "https://8ncrc15q.forms.app",
       embedSrc: "https://forms.app/cdn/embed.js"
+    },
+    branding: {
+      logoPath: "/assets/brand/american-medical-board.svg",
+      fallbackWidth: 68,
+      fallbackHeight: 23
     }
   };
   const INTRO_ROOT_SELECTOR = '[data-framer-name="D - intro"], [data-framer-name="T - intro"], [data-framer-name="M - intro"]';
@@ -197,8 +202,79 @@
     });
   }
 
+  function isLikelyBrandLogoAnchor(anchor) {
+    if (!(anchor instanceof HTMLAnchorElement)) {
+      return false;
+    }
+
+    const href = (anchor.getAttribute("href") || "").toLowerCase();
+    const pointsToBrandSite = href.includes("vitra.com/home") || href === "https://www.vitra.com" || href === "https://www.vitra.com/";
+    if (!pointsToBrandSite) {
+      return false;
+    }
+
+    const text = (anchor.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+    const hasSvgContent = Boolean(anchor.querySelector("svg, [data-framer-component-type='SVG']"));
+    const hasFramerText = Boolean(anchor.querySelector(".framer-text, [data-framer-component-type='RichTextContainer']"));
+    const isTextOnlyFooterLink = text.includes("privacy") || text.includes("vitra.com");
+
+    if (isTextOnlyFooterLink) {
+      return false;
+    }
+
+    if (hasFramerText && text.length > 0 && !hasSvgContent) {
+      return false;
+    }
+
+    return hasSvgContent || text.length === 0 || text === "vitra.";
+  }
+
+  function patchBrandLogoAnchor(anchor) {
+    if (!(anchor instanceof HTMLAnchorElement)) {
+      return;
+    }
+    if (anchor.dataset.abgLogoPatched === "1") {
+      return;
+    }
+
+    const bounds = anchor.getBoundingClientRect();
+    const width = Math.max(Math.round(bounds.width), SETTINGS.branding.fallbackWidth);
+    const height = Math.max(Math.round(bounds.height), SETTINGS.branding.fallbackHeight);
+
+    anchor.dataset.abgLogoPatched = "1";
+    anchor.setAttribute("aria-label", "American Medical Board");
+
+    anchor.style.position = "relative";
+    anchor.style.display = "inline-block";
+    anchor.style.width = `${width}px`;
+    anchor.style.height = `${height}px`;
+    anchor.style.minWidth = `${width}px`;
+    anchor.style.minHeight = `${height}px`;
+    anchor.style.backgroundImage = `url("${SETTINGS.branding.logoPath}")`;
+    anchor.style.backgroundPosition = "center";
+    anchor.style.backgroundRepeat = "no-repeat";
+    anchor.style.backgroundSize = "contain";
+    anchor.style.overflow = "hidden";
+
+    anchor.querySelectorAll("*").forEach((node) => {
+      if (node instanceof HTMLElement) {
+        node.style.opacity = "0";
+        node.style.pointerEvents = "none";
+      }
+    });
+  }
+
+  function patchBrandLogos() {
+    document.querySelectorAll('a[href*="vitra.com"]').forEach((node) => {
+      if (isLikelyBrandLogoAnchor(node)) {
+        patchBrandLogoAnchor(node);
+      }
+    });
+  }
+
   function runPatchOnce() {
     if (!isLandingPage()) {
+      patchBrandLogos();
       return;
     }
 
@@ -219,6 +295,8 @@
     ).forEach((node) => {
       forceConfirmHref(node);
     });
+
+    patchBrandLogos();
   }
 
   function getTextNodes(root) {
@@ -508,4 +586,5 @@
   window.setTimeout(runPatchOnce, 500);
   window.setTimeout(runPatchOnce, 1500);
   window.setTimeout(runPatchOnce, 3000);
+  window.setTimeout(runPatchOnce, 4500);
 })();
