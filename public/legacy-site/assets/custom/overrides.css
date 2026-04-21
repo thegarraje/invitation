@@ -1,0 +1,9 @@
+/* Keep Framer typography from splitting words awkwardly after custom copy updates. */
+.framer-text,
+[data-framer-component-type="RichTextContainer"] .framer-text {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+  white-space: normal !important;
+  text-wrap: pretty;
+}

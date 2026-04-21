@@ -3,13 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:legacy-htm": "node scripts/prepare-legacy-htm.mjs",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run prepare:legacy-htm && next build",
+    "export": "npm run build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "verify:routes": "node scripts/check-route-parity.mjs",
+    "verify:no-external": "node scripts/verify-no-external.mjs",
+    "compare:visual": "node scripts/compare-visual.mjs"
   },
   "dependencies": {
+    "framer-motion": "^12.38.0",
+    "globby": "^16.2.0",
     "next": "16.2.4",
+    "pixelmatch": "^7.1.0",
+    "playwright": "^1.59.1",
+    "pngjs": "^7.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
