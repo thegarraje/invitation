@@ -8,7 +8,7 @@
     legacyCopy: {
       enabled: true,
       manifestPath: "/legacy-site/assets/custom/legacy-copy.json",
-      maxObserveMs: 12000
+      maxObserveMs: 20000
     },
     brandLogo: {
       enabled: true,
@@ -132,12 +132,25 @@
     }
 
     const href = anchor.getAttribute("href") || "";
-    const cleanHref = href.split("#")[0];
-    if (!cleanHref.startsWith("/")) {
-      return false;
+    let pathname = "";
+    try {
+      pathname = new URL(href || "/", window.location.href).pathname;
+    } catch {
+      pathname = href.split("#")[0];
     }
+    const normalizedPath = pathname.replace(/\/+$/, "");
+    const isHomePath = [
+      "",
+      "/",
+      "/old-home",
+      "/old-home.htm",
+      "/old-home.html",
+      "/legacy-site/old-home",
+      "/legacy-site/old-home.htm",
+      "/legacy-site/old-home.html"
+    ].includes(normalizedPath);
 
-    if (cleanHref !== "/" && cleanHref !== "/old-home") {
+    if (!isHomePath) {
       return false;
     }
 
@@ -194,10 +207,11 @@
     const startedAt = Date.now();
 
     const observer = new MutationObserver(() => {
+      patchVoteLabelsEverywhere();
+      document.querySelectorAll("a, button, [role='button']").forEach((node) => {
+        replaceLabelOnce(node);
+      });
       patchLegacyBrandLogo();
-      if (document.querySelector("[data-abg-logo-patched='1']")) {
-        observer.disconnect();
-      }
     });
 
     observer.observe(document.documentElement, {
@@ -206,16 +220,18 @@
     });
 
     const interval = window.setInterval(() => {
+      patchVoteLabelsEverywhere();
+      document.querySelectorAll("a, button, [role='button']").forEach((node) => {
+        replaceLabelOnce(node);
+      });
       patchLegacyBrandLogo();
-
-      const isPatched = Boolean(document.querySelector("[data-abg-logo-patched='1']"));
       const isTimedOut = Date.now() - startedAt > SETTINGS.legacyCopy.maxObserveMs;
 
-      if (isPatched || isTimedOut) {
+      if (isTimedOut) {
         window.clearInterval(interval);
         observer.disconnect();
       }
-    }, 300);
+    }, 500);
   }
 
   function getTextNodes(root) {
