@@ -13,15 +13,14 @@
     "typecheck": "tsc --noEmit",
     "verify:routes": "node scripts/check-route-parity.mjs",
     "verify:no-external": "node scripts/verify-no-external.mjs",
-    "compare:visual": "node scripts/compare-visual.mjs"
+    "compare:visual": "node scripts/compare-visual.mjs",
+    "prune:assets": "node scripts/prune-unreferenced-assets.mjs",
+    "prune:assets:apply": "node scripts/prune-unreferenced-assets.mjs --apply",
+    "optimize:assets": "npm run prune:assets:apply"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
-    "globby": "^16.2.0",
     "next": "16.2.4",
-    "pixelmatch": "^7.1.0",
-    "playwright": "^1.59.1",
-    "pngjs": "^7.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -32,6 +31,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "globby": "^16.2.0",
+    "pixelmatch": "^7.1.0",
+    "playwright": "^1.59.1",
+    "pngjs": "^7.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

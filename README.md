@@ -12,6 +12,8 @@ Static/exportable Next.js rebuild with legacy Framer parity routes and a fullscr
 - `npm run verify:routes` - route parity check against exported output
 - `npm run verify:no-external` - runtime external-host reference guard
 - `npm run compare:visual` - visual comparison script
+- `npm run prune:assets` - dry-run report of unreferenced localized assets
+- `npm run optimize:assets` - remove unreferenced localized assets
 
 ## Project Structure
 
@@ -19,7 +21,7 @@ Static/exportable Next.js rebuild with legacy Framer parity routes and a fullscr
 - `src/components/layout` - shell and route-level UI containers
 - `src/components/sections` - reusable content sections
 - `src/content` - route/content definitions and editable copy
-- `src/lib` - runtime helpers (legacy mirror, route normalization, storage/email helpers)
+- `src/lib` - runtime helpers (legacy mirror, motion presets, route normalization)
 - `public/legacy-site` - legacy mirrored Framer HTML pages and custom patches
 - `public/_local_assets` - localized runtime assets used by legacy mirrored pages
 - `scripts` - build and verification scripts
@@ -31,5 +33,6 @@ Use `CONTENT_EDITING.md` for the fastest path to update page text and CTA behavi
 
 ## Notes
 
-- Keep `public/_local_assets` intact; legacy mirrored pages rely on it.
+- This branch is configured for static export (`output: "export"`).
+- Internal API/admin persistence routes are removed; `/admin` pages are static informational screens.
 - Keep confirm flow paths stable (`/confirm/`) because legacy CTA patches point there.

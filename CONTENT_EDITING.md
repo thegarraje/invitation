@@ -19,7 +19,7 @@ Main copy files:
 - `src/content/sections/confirm.ts`
   - confirm page title and iframe URL
 - `src/content/sections/admin.ts`
-  - admin page title/subtitle/buttons and table headers
+  - static admin informational copy and CTA labels
 - `src/content/colors.ts`
   - color labels, taglines, and theme palette values
 - `src/content/routes.ts`
@@ -83,6 +83,8 @@ Use this for typography/word-break fixes that must apply inside mirrored pages.
 
 - Local dev: `npm run dev`
 - Production build: `npm run build`
+- Optional asset cleanup report: `npm run prune:assets`
+- Apply asset cleanup: `npm run optimize:assets`
 
 If you edit files in `public/legacy-site`, rebuild before deployment.
 If you edit `src/content/sections/home-legacy-copy.json`, run `npm run sync:legacy-copy` (or just `npm run build`, which includes it).
