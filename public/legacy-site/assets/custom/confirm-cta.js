@@ -8,12 +8,7 @@
     legacyCopy: {
       enabled: true,
       manifestPath: "/legacy-site/assets/custom/legacy-copy.json",
-      maxObserveMs: 20000
-    },
-    brandLogo: {
-      enabled: true,
-      src: "/assets/brand/american-medical-board.svg",
-      alt: "American Medical Board"
+      maxObserveMs: 3000
     },
     form: {
       id: "69e6c64b8c8898e1dd0c8b9f",
@@ -21,6 +16,25 @@
       embedSrc: "https://forms.app/cdn/embed.js"
     }
   };
+  const INTRO_ROOT_SELECTOR = '[data-framer-name="D - intro"], [data-framer-name="T - intro"], [data-framer-name="M - intro"]';
+
+  function normalizePathname(pathname) {
+    return String(pathname || "")
+      .toLowerCase()
+      .replace(/\/+$/, "");
+  }
+
+  function isLandingPage() {
+    const path = normalizePathname(window.location.pathname);
+    if (path === "" || path === "/") {
+      return true;
+    }
+    return /(^|\/)(old-home|index)(\.html?|)$/.test(path);
+  }
+
+  function isWithinIntroRoot(element) {
+    return element instanceof Element && Boolean(element.closest(INTRO_ROOT_SELECTOR));
+  }
 
   function normalize(value) {
     return (value || "")
@@ -62,6 +76,9 @@
     if (!(element instanceof HTMLElement)) {
       return;
     }
+    if (!isLandingPage() || !isWithinIntroRoot(element)) {
+      return;
+    }
 
     const label = element.textContent || "";
     if (!isTargetLabel(label)) {
@@ -90,6 +107,9 @@
     if (!(node instanceof HTMLElement)) {
       return;
     }
+    if (!isLandingPage() || !isWithinIntroRoot(node)) {
+      return;
+    }
 
     const label = node.textContent || "";
     if (!isTargetLabel(label)) {
@@ -106,132 +126,21 @@
   }
 
   function patchVoteLabelsEverywhere() {
-    document.querySelectorAll(".framer-text").forEach((node) => {
+    document.querySelectorAll(`${INTRO_ROOT_SELECTOR} .framer-text`).forEach((node) => {
       patchAnyVoteTextNode(node);
     });
   }
 
   function runPatchOnce() {
-    document.querySelectorAll("a, button, [role='button']").forEach((node) => {
+    if (!isLandingPage()) {
+      return;
+    }
+
+    document.querySelectorAll(`${INTRO_ROOT_SELECTOR} a, ${INTRO_ROOT_SELECTOR} button, ${INTRO_ROOT_SELECTOR} [role='button']`).forEach((node) => {
       replaceLabelOnce(node);
     });
 
     patchVoteLabelsEverywhere();
-    patchLegacyBrandLogo();
-    ensureBrandPatchWatcher();
-  }
-
-  function isLegacyBrandAnchor(anchor) {
-    if (!(anchor instanceof HTMLAnchorElement)) {
-      return false;
-    }
-
-    const text = (anchor.textContent || "").replace(/\s+/g, " ").trim();
-    if (text.length > 0) {
-      return false;
-    }
-
-    const href = anchor.getAttribute("href") || "";
-    let pathname = "";
-    try {
-      pathname = new URL(href || "/", window.location.href).pathname;
-    } catch {
-      pathname = href.split("#")[0];
-    }
-    const normalizedPath = pathname.replace(/\/+$/, "");
-    const isHomePath = [
-      "",
-      "/",
-      "/old-home",
-      "/old-home.htm",
-      "/old-home.html",
-      "/legacy-site/old-home",
-      "/legacy-site/old-home.htm",
-      "/legacy-site/old-home.html"
-    ].includes(normalizedPath);
-
-    if (!isHomePath) {
-      return false;
-    }
-
-    const hasGraphic = Boolean(anchor.querySelector('[data-framer-component-type="SVG"], svg, img'));
-    if (!hasGraphic) {
-      return false;
-    }
-
-    return true;
-  }
-
-  function patchLegacyBrandLogo() {
-    if (!SETTINGS.brandLogo.enabled) {
-      return;
-    }
-
-    const anchors = Array.from(document.querySelectorAll("a"))
-      .filter((anchor) => isLegacyBrandAnchor(anchor));
-
-    for (const anchor of anchors) {
-      if (anchor.getAttribute("data-abg-logo-patched") === "1") {
-        continue;
-      }
-
-      anchor.setAttribute("data-abg-logo-patched", "1");
-      anchor.setAttribute("aria-label", SETTINGS.brandLogo.alt);
-      anchor.textContent = "";
-      anchor.style.display = "inline-flex";
-      anchor.style.alignItems = "center";
-      anchor.style.justifyContent = "center";
-
-      const image = document.createElement("img");
-      image.src = SETTINGS.brandLogo.src;
-      image.alt = SETTINGS.brandLogo.alt;
-      image.decoding = "async";
-      image.loading = "eager";
-      image.draggable = false;
-      image.style.width = "100%";
-      image.style.height = "100%";
-      image.style.objectFit = "contain";
-      image.style.display = "block";
-      anchor.appendChild(image);
-    }
-  }
-
-  let brandPatchWatcherStarted = false;
-
-  function ensureBrandPatchWatcher() {
-    if (brandPatchWatcherStarted || !SETTINGS.brandLogo.enabled) {
-      return;
-    }
-
-    brandPatchWatcherStarted = true;
-    const startedAt = Date.now();
-
-    const observer = new MutationObserver(() => {
-      patchVoteLabelsEverywhere();
-      document.querySelectorAll("a, button, [role='button']").forEach((node) => {
-        replaceLabelOnce(node);
-      });
-      patchLegacyBrandLogo();
-    });
-
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true
-    });
-
-    const interval = window.setInterval(() => {
-      patchVoteLabelsEverywhere();
-      document.querySelectorAll("a, button, [role='button']").forEach((node) => {
-        replaceLabelOnce(node);
-      });
-      patchLegacyBrandLogo();
-      const isTimedOut = Date.now() - startedAt > SETTINGS.legacyCopy.maxObserveMs;
-
-      if (isTimedOut) {
-        window.clearInterval(interval);
-        observer.disconnect();
-      }
-    }, 500);
   }
 
   function getTextNodes(root) {
@@ -417,18 +326,8 @@
     };
 
     applyAll();
-    window.setTimeout(applyAll, 1000);
-
-    const observer = new MutationObserver(() => {
-      applyAll();
-    });
-
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true
-    });
-
-    window.setTimeout(() => observer.disconnect(), SETTINGS.legacyCopy.maxObserveMs);
+    window.setTimeout(applyAll, 500);
+    window.setTimeout(applyAll, 1500);
   }
 
   function tryOpenFormNow() {
@@ -489,6 +388,10 @@
   document.addEventListener(
     "click",
     (event) => {
+      if (!isLandingPage()) {
+        return;
+      }
+
       const target = event.target;
       if (!(target instanceof Element)) {
         return;
@@ -496,6 +399,9 @@
 
       const actionElement = target.closest("a,button,[role='button']");
       if (!actionElement) {
+        return;
+      }
+      if (!isWithinIntroRoot(actionElement)) {
         return;
       }
 
@@ -520,5 +426,6 @@
     applyLegacyCopyAdapter();
   }
 
-  window.setTimeout(runPatchOnce, 1000);
+  window.setTimeout(runPatchOnce, 500);
+  window.setTimeout(runPatchOnce, 1500);
 })();
