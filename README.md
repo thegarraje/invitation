@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Panton Rebuild (Next.js)
 
-## Getting Started
+Static/exportable Next.js rebuild with legacy Framer parity routes and a fullscreen confirm flow.
 
-First, run the development server:
+## Commands
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- `npm run dev` - local development
+- `npm run build` - build app (runs legacy `.htm` preparation first)
+- `npm run export` - alias of build for static output
+- `npm run typecheck` - TypeScript checks
+- `npm run lint` - ESLint
+- `npm run verify:routes` - route parity check against exported output
+- `npm run verify:no-external` - runtime external-host reference guard
+- `npm run compare:visual` - visual comparison script
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `src/app` - Next.js routes (App Router)
+- `src/components/layout` - shell and route-level UI containers
+- `src/components/sections` - reusable content sections
+- `src/content` - route/content definitions and editable copy
+- `src/lib` - runtime helpers (legacy mirror, route normalization, storage/email helpers)
+- `public/legacy-site` - legacy mirrored Framer HTML pages and custom patches
+- `public/_local_assets` - localized runtime assets used by legacy mirrored pages
+- `scripts` - build and verification scripts
+- `config/route-paths.json` - canonical route/color parity map
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Content Editing
 
-## Learn More
+Use `CONTENT_EDITING.md` for the fastest path to update page text and CTA behavior.
 
-To learn more about Next.js, take a look at the following resources:
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Keep `public/_local_assets` intact; legacy mirrored pages rely on it.
+- Keep confirm flow paths stable (`/confirm/`) because legacy CTA patches point there.

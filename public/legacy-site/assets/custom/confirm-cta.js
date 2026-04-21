@@ -1,8 +1,16 @@
 (() => {
-  const TARGET_PATH = "/confirm/";
-  const FORM_ID = "69e6c64b8c8898e1dd0c8b9f";
-  const FORM_HOST = "https://8ncrc15q.forms.app";
-  const EMBED_SRC = "https://forms.app/cdn/embed.js";
+  // Centralized legacy CTA settings.
+  // Edit this object when you need to change the confirm button behavior.
+  const SETTINGS = {
+    targetPath: "/confirm/",
+    buttonLabel: "CONFIRM",
+    acceptedLabels: ["vote", "confirm", "vote colour", "vote color"],
+    form: {
+      id: "69e6c64b8c8898e1dd0c8b9f",
+      host: "https://8ncrc15q.forms.app",
+      embedSrc: "https://forms.app/cdn/embed.js"
+    }
+  };
 
   function normalize(value) {
     return (value || "")
@@ -13,15 +21,15 @@
 
   function isTargetLabel(text) {
     const clean = normalize(text);
-    return clean === "vote" || clean === "confirm" || clean === "vote colour" || clean === "vote color";
+    return SETTINGS.acceptedLabels.includes(clean);
   }
 
   function redirectTop() {
     if (window.top && window.top !== window) {
-      window.top.location.href = TARGET_PATH;
+      window.top.location.href = SETTINGS.targetPath;
       return;
     }
-    window.location.href = TARGET_PATH;
+    window.location.href = SETTINGS.targetPath;
   }
 
   function replaceLabelOnce(element) {
@@ -35,7 +43,7 @@
     }
 
     if (element.tagName === "A") {
-      element.setAttribute("href", TARGET_PATH);
+      element.setAttribute("href", SETTINGS.targetPath);
       element.setAttribute("target", "_top");
     }
 
@@ -43,13 +51,13 @@
     if (textNodes.length > 0) {
       textNodes.forEach((node) => {
         if (isTargetLabel(node.textContent || "")) {
-          node.textContent = "CONFIRM";
+          node.textContent = SETTINGS.buttonLabel;
         }
       });
       return;
     }
 
-    element.textContent = "CONFIRM";
+    element.textContent = SETTINGS.buttonLabel;
   }
 
   function runPatchOnce() {
@@ -68,7 +76,7 @@
     }
 
     window.__abgFormOpening = true;
-    new window.formsapp(FORM_ID, "fullscreen", { opacity: 0 }, FORM_HOST);
+    new window.formsapp(SETTINGS.form.id, "fullscreen", { opacity: 0 }, SETTINGS.form.host);
     return true;
   }
 
@@ -82,10 +90,10 @@
       return;
     }
 
-    const existing = document.querySelector(`script[src=\"${EMBED_SRC}\"]`);
+    const existing = document.querySelector(`script[src=\"${SETTINGS.form.embedSrc}\"]`);
     if (!existing) {
       const script = document.createElement("script");
-      script.src = EMBED_SRC;
+      script.src = SETTINGS.form.embedSrc;
       script.async = true;
       script.defer = true;
       script.onload = () => {

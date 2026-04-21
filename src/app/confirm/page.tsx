@@ -1,12 +1,14 @@
+import { CONFIRM_PAGE_COPY } from "@/content/site-copy";
+
 export default function ConfirmPage() {
   return (
     <main className="h-screen w-screen overflow-hidden bg-[#ebf9fa]">
       <iframe
-        title="ABG Meeting Confirmation Form"
+        title={CONFIRM_PAGE_COPY.title}
         allowTransparency
         allowFullScreen
         allow="geolocation; microphone; camera"
-        src="https://8ncrc15q.forms.app/form/69e6c64b8c8898e1dd0c8b9f"
+        src={CONFIRM_PAGE_COPY.iframeSrc}
         className="h-full w-full border-0"
       />
     </main>

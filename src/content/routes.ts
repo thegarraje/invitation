@@ -1,45 +1,17 @@
 import { COLOR_VARIANTS } from "@/content/colors";
 import { COLOR_KEYS, ROUTE_PATHS, WINNING_COLOR_KEYS } from "@/content/route-paths";
+import {
+  HOME_SCENE_COPY,
+  PHASE_HOME_COPY,
+  SHARED_FOOTER,
+  SHARED_TIMELINE,
+  TEST_SCENE_COPY
+} from "@/content/site-copy";
 import type {
   ColorKey,
   ColorsSectionData,
-  FooterSectionData,
-  RouteScene,
-  TimelineSectionData
+  RouteScene
 } from "@/types/content";
-
-const SHARED_TIMELINE: TimelineSectionData = {
-  id: "timeline",
-  title: "From Story To Selection",
-  items: [
-    {
-      label: "01",
-      title: "Design Legacy",
-      body: "Verner Panton's work treated color as architecture and atmosphere."
-    },
-    {
-      label: "02",
-      title: "Audience Voting",
-      body: "Each phase turns color selection into a shared decision rather than a guess."
-    },
-    {
-      label: "03",
-      title: "Release Outcome",
-      body: "Winning tones move forward into launch-ready product storytelling."
-    }
-  ]
-};
-
-const SHARED_FOOTER: FooterSectionData = {
-  id: "footer",
-  title: "Project Links",
-  body: "Static independent rebuild with local assets and no external runtime scripts.",
-  links: [
-    { label: "Vitra Home", href: "https://www.vitra.com", external: true },
-    { label: "Privacy", href: "https://www.vitra.com/en-us/privacy-policy", external: true },
-    { label: "Instagram", href: "https://www.instagram.com/vitra", external: true }
-  ]
-};
 
 function buildColorLinks(basePath: string, active?: ColorKey): ColorsSectionData {
   return {
@@ -100,10 +72,12 @@ function homeScene(path: string, title: string, subtitle: string): RouteScene {
   };
 }
 
-function phaseHomeScene(path: string, phase: RouteScene["phase"], title: string, color: ColorKey): RouteScene {
+function phaseHomeScene(path: string, phase: RouteScene["phase"], color: ColorKey): RouteScene {
   const variant = COLOR_VARIANTS[color];
   const phasePrefix = path.split("/").slice(0, 3).join("/");
   const colorBasePath = `${phasePrefix}/colors`;
+  const phaseCopy = PHASE_HOME_COPY[phase as keyof typeof PHASE_HOME_COPY];
+
   return {
     path,
     phase,
@@ -116,7 +90,7 @@ function phaseHomeScene(path: string, phase: RouteScene["phase"], title: string,
     },
     hero: {
       id: "hero",
-      title,
+      title: phaseCopy?.title || "Phase",
       subtitle: "Choose, compare, and move through each palette route.",
       description: variant.tagline,
       ctaLabel: phase === "vote" ? "Confirm" : variant.voteCTA,
@@ -216,14 +190,16 @@ const scenes = new Map<string, RouteScene>();
 
 scenes.set(
   "/",
-  homeScene(
-    "/",
-    "Panton Chair Edition",
-    "A fully local independent rebuild of the Framer experience"
-  )
+  homeScene("/", HOME_SCENE_COPY["/"].title, HOME_SCENE_COPY["/"].subtitle)
 );
-scenes.set("/old-home", homeScene("/old-home", "Panton Archive - Home", "Original intro flow"));
-scenes.set("/old-home-2", homeScene("/old-home-2", "Panton Archive - Home 2", "Alternate intro flow"));
+scenes.set(
+  "/old-home",
+  homeScene("/old-home", HOME_SCENE_COPY["/old-home"].title, HOME_SCENE_COPY["/old-home"].subtitle)
+);
+scenes.set(
+  "/old-home-2",
+  homeScene("/old-home-2", HOME_SCENE_COPY["/old-home-2"].title, HOME_SCENE_COPY["/old-home-2"].subtitle)
+);
 
 scenes.set(
   "/tests/form-testing",
@@ -235,10 +211,9 @@ scenes.set(
     nav: { prev: "/", next: "/vote-phase/home-back", close: "/" },
     hero: {
       id: "hero",
-      title: "Form Test Page",
-      subtitle: "Static-only behavior",
-      description:
-        "Form and vote interactions are intentionally local and non-persistent in this static rebuild.",
+      title: TEST_SCENE_COPY.title,
+      subtitle: TEST_SCENE_COPY.subtitle,
+      description: TEST_SCENE_COPY.description,
       ctaLabel: "Back Home",
       ctaHref: "/",
       theme: COLOR_VARIANTS.turquoise.theme
@@ -271,30 +246,15 @@ scenes.set(
 
 scenes.set(
   "/gap-phase/home-back",
-  phaseHomeScene(
-    "/gap-phase/home-back",
-    "gap",
-    "Gap Phase",
-    "orange"
-  )
+  phaseHomeScene("/gap-phase/home-back", "gap", "orange")
 );
 scenes.set(
   "/vote-phase/home-back",
-  phaseHomeScene(
-    "/vote-phase/home-back",
-    "vote",
-    "Vote Phase",
-    "red"
-  )
+  phaseHomeScene("/vote-phase/home-back", "vote", "red")
 );
 scenes.set(
   "/vote-end-phase/home-back",
-  phaseHomeScene(
-    "/vote-end-phase/home-back",
-    "vote-end",
-    "Vote End Phase",
-    "violet"
-  )
+  phaseHomeScene("/vote-end-phase/home-back", "vote-end", "violet")
 );
 
 for (const key of COLOR_KEYS) {
