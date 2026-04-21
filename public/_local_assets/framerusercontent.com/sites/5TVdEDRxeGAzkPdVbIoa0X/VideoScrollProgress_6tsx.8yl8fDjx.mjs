@@ -1,2 +1,0 @@
-import{t as e}from"./rolldown-runtime.DMchgCKR.mjs";import{c as t,o as n}from"./react.D8TTbFx7.mjs";import{$ as r,Z as i,t as a}from"./motion.BBg6--03.mjs";function o(e){let n=6e3;return n+6050,a=>{let{scrollY:o}=i(),s=r(o,[n,12050],[0,1]);return t(e,{...a,progress:s})}}var s=e((()=>{n(),a()}));export{o as n,s as t};
-//# sourceMappingURL=VideoScrollProgress_6tsx.8yl8fDjx.mjs.map

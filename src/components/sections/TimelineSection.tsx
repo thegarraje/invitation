@@ -13,8 +13,8 @@ export function TimelineSection({ timeline }: TimelineSectionProps) {
   const reveal = motionPresets.reveal;
 
   return (
-    <section id={timeline.id} className="relative px-6 py-24">
-      <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/20 bg-[#ebf9fa]/90 p-8 text-[#3a001a] md:p-12">
+    <section id={timeline.id} className="relative flex min-h-screen items-center px-6 py-24">
+      <div className="mx-auto w-full max-w-6xl rounded-[2rem] border border-white/20 bg-[#ebf9fa]/90 p-8 text-[#3a001a] md:p-12">
         <h2 className="text-2xl font-semibold uppercase tracking-[0.09em] md:text-3xl">{timeline.title}</h2>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">

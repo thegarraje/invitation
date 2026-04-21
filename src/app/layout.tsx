@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Panton x Vitra - Local Rebuild",
-  description: "Independent static Next.js rebuild of the Panton Vitra Framer site.",
+  title: "ABG Meeting - Invitation Portal",
+  description: "Static native invitation experience with confirmation flow.",
   metadataBase: new URL("https://panton.local")
 };
 

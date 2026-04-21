@@ -13,7 +13,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
   const reveal = motionPresets.reveal;
 
   return (
-    <section id={hero.id} className="relative flex min-h-[92vh] items-center justify-center px-6 py-16 text-center">
+    <section id={hero.id} className="relative flex min-h-screen items-center justify-center px-6 py-16 text-center">
       <div className="mx-auto w-full max-w-4xl">
         <motion.p
           className="mb-4 text-xs font-semibold uppercase tracking-[0.3em]"
@@ -42,7 +42,7 @@ export function HeroSection({ hero }: HeroSectionProps) {
         </motion.h1>
 
         <motion.p
-          className="mx-auto mt-6 max-w-3xl text-balance text-xl font-medium leading-tight md:text-5xl"
+          className="mx-auto mt-6 max-w-3xl text-balance text-2xl font-medium leading-tight md:text-5xl"
           style={{ color: hero.theme.text }}
           initial={prefersReducedMotion ? undefined : reveal.initial}
           whileInView={prefersReducedMotion ? undefined : reveal.animate}
@@ -55,6 +55,31 @@ export function HeroSection({ hero }: HeroSectionProps) {
         >
           {hero.description}
         </motion.p>
+
+        <motion.div
+          className="mx-auto mt-14 inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-black/15 text-3xl text-[#ebf9fa]/90"
+          initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+          animate={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  opacity: [0.45, 1, 0.45],
+                  y: [0, 8, 0]
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  duration: 2.2,
+                  repeat: Infinity,
+                  ease: [0.42, 0, 0.58, 1]
+                }
+          }
+          aria-hidden="true"
+        >
+          ↓
+        </motion.div>
       </div>
     </section>
   );

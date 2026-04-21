@@ -12,16 +12,20 @@ interface PhaseLayoutProps {
 }
 
 export function PhaseLayout({ scene }: PhaseLayoutProps) {
+  const sectionComponents = {
+    hero: <HeroSection key="hero" hero={scene.hero} />,
+    timeline: <TimelineSection key="timeline" timeline={scene.timeline} />,
+    colors: <ColorsSection key="colors" colors={scene.colors} />,
+    footer: <FooterSection key="footer" footer={scene.footer} />
+  } as const;
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       <MediaLayer theme={scene.hero.theme} />
 
       <PageTransition sceneKey={scene.path}>
         <main className="relative z-10">
-          <HeroSection hero={scene.hero} />
-          <TimelineSection timeline={scene.timeline} />
-          <ColorsSection colors={scene.colors} />
-          <FooterSection footer={scene.footer} />
+          {scene.sectionOrder.map((section) => sectionComponents[section])}
         </main>
       </PageTransition>
 

@@ -14,8 +14,8 @@ export function ColorsSection({ colors }: ColorsSectionProps) {
   const reveal = motionPresets.reveal;
 
   return (
-    <section id={colors.id} className="relative px-6 py-16 md:py-24">
-      <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/15 bg-[#3a001a]/65 p-6 text-[#ebf9fa] md:p-10">
+    <section id={colors.id} className="relative flex min-h-screen items-center px-6 py-16 md:py-24">
+      <div className="mx-auto w-full max-w-6xl rounded-[2rem] border border-white/15 bg-[#3a001a]/65 p-6 text-[#ebf9fa] md:p-10">
         <h2 className="text-2xl font-semibold uppercase tracking-[0.09em] md:text-3xl">{colors.title}</h2>
         <p className="mt-3 max-w-3xl text-sm text-[#ebf9fa]/80 md:text-base">{colors.body}</p>
 

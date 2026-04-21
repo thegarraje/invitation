@@ -3,20 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "sync:legacy-copy": "node scripts/sync-legacy-copy.mjs",
-    "prepare:legacy-htm": "npm run sync:legacy-copy && node scripts/prepare-legacy-htm.mjs",
     "dev": "next dev",
-    "build": "npm run prepare:legacy-htm && next build",
+    "build": "next build",
     "export": "npm run build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "verify:routes": "node scripts/check-route-parity.mjs",
     "verify:no-external": "node scripts/verify-no-external.mjs",
-    "compare:visual": "node scripts/compare-visual.mjs",
-    "prune:assets": "node scripts/prune-unreferenced-assets.mjs",
-    "prune:assets:apply": "node scripts/prune-unreferenced-assets.mjs --apply",
-    "optimize:assets": "npm run prune:assets:apply"
+    "compare:visual": "node scripts/compare-visual.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",

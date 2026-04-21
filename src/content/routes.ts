@@ -16,8 +16,8 @@ import type {
 function buildColorLinks(basePath: string, active?: ColorKey): ColorsSectionData {
   return {
     id: "colors",
-    title: "Colour Palette",
-    body: "Explore every palette variant while preserving route parity with the original Framer map.",
+    title: "JOIN THIS MEETING AND BE APART OF THE BIGGEST INFRASTRUCTURES.",
+    body: "DAYS LEFT TO CONFIRM",
     links: COLOR_KEYS.map((key) => ({
       key,
       label: COLOR_VARIANTS[key].label,
@@ -46,6 +46,7 @@ function navForWinning(color: ColorKey) {
 
 function homeScene(path: string, title: string, subtitle: string): RouteScene {
   const introTheme = COLOR_VARIANTS.blue.theme;
+  const homeCopy = HOME_SCENE_COPY[path as keyof typeof HOME_SCENE_COPY];
   return {
     path,
     phase: path === "/" ? "intro" : "legacy",
@@ -60,10 +61,9 @@ function homeScene(path: string, title: string, subtitle: string): RouteScene {
       id: "hero",
       title,
       subtitle,
-      description:
-        "The edition is based on the colour palette of Panton's legendary interior landscapes and his experimental approach to colour.",
-      ctaLabel: "Early Access",
-      ctaHref: "https://www.vitra.com/product/details/panton-chair",
+      description: homeCopy.description,
+      ctaLabel: "Confirm",
+      ctaHref: "/confirm",
       theme: introTheme
     },
     timeline: SHARED_TIMELINE,
@@ -91,8 +91,8 @@ function phaseHomeScene(path: string, phase: RouteScene["phase"], color: ColorKe
     hero: {
       id: "hero",
       title: phaseCopy?.title || "Phase",
-      subtitle: "Choose, compare, and move through each palette route.",
-      description: variant.tagline,
+      subtitle: phaseCopy?.subtitle || "DAYS LEFT TO CONFIRM",
+      description: phaseCopy?.description || variant.tagline,
       ctaLabel: phase === "vote" ? "Confirm" : variant.voteCTA,
       ctaHref: phase === "vote" ? "/confirm" : `${colorBasePath}/${variant.key}`,
       theme: variant.theme
@@ -131,9 +131,9 @@ function colorScene(path: string, phase: RouteScene["phase"], kind: RouteScene["
   const subtitleByKind: Record<RouteScene["kind"], string> = {
     home: "",
     "phase-home": "",
-    color: "Vote route",
-    winning: "Winning route",
-    scoreboard: "Scoreboard route",
+    color: "DAYS LEFT TO CONFIRM",
+    winning: "DAYS LEFT TO CONFIRM",
+    scoreboard: "Confirmation Overview",
     test: ""
   };
 
@@ -163,21 +163,21 @@ function colorScene(path: string, phase: RouteScene["phase"], kind: RouteScene["
       items: [
         {
           label: "01",
-          title: `${variant.shortLabel} Story`,
-          body: variant.tagline
+          title: "Meeting Track",
+          body: `Route context: ${variant.tagline}`
         },
         {
           label: "02",
-          title: kind === "scoreboard" ? "Current Standing" : "Audience Interaction",
+          title: kind === "scoreboard" ? "Current Status" : "Participation Flow",
           body:
             kind === "scoreboard"
-              ? "Static scoreboard view in this rebuild (no external tracking or persistence)."
-              : "Selection is preserved as a static route flow for local-only publishing."
+              ? "Static overview mode in this rebuild (no internal persistence)."
+              : "Route progression is preserved using native static navigation."
         },
         {
           label: "03",
-          title: "Product Direction",
-          body: "Each color route keeps visual intent while using modern reusable Next.js sections."
+          title: "Action",
+          body: "Use the confirm entry to complete attendance confirmation and NDA steps."
         }
       ]
     },

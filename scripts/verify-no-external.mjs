@@ -30,13 +30,6 @@ const files = await globby(["**/*.{html,js,css,json}"], {
 const hits = [];
 
 for (const file of files) {
-  if (file.includes(`${path.sep}assets${path.sep}legacy${path.sep}`)) {
-    continue;
-  }
-  if (file.includes(`${path.sep}legacy-site${path.sep}`)) {
-    continue;
-  }
-
   const content = await readFile(file, "utf8");
   for (const pattern of blockedHostPatterns) {
     const matches = content.match(pattern);
