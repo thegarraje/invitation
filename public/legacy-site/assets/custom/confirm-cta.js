@@ -103,6 +103,62 @@
     element.textContent = SETTINGS.buttonLabel;
   }
 
+  function patchCtaActionElement(element) {
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+    if (!isLandingPage() || !isWithinIntroRoot(element)) {
+      return;
+    }
+
+    if (element.tagName === "A") {
+      element.setAttribute("href", SETTINGS.targetPath);
+      element.setAttribute("target", "_top");
+    }
+
+    const textNodes = element.querySelectorAll(".framer-text");
+    if (textNodes.length > 0) {
+      let updatedAny = false;
+      textNodes.forEach((node) => {
+        if (isTargetLabel(node.textContent || "")) {
+          node.textContent = SETTINGS.buttonLabel;
+          updatedAny = true;
+        }
+      });
+      if (updatedAny) {
+        return;
+      }
+    }
+
+    if (isTargetLabel(element.textContent || "")) {
+      element.textContent = SETTINGS.buttonLabel;
+    }
+  }
+
+  function isPrimaryConfirmCtaElement(element) {
+    if (!(element instanceof Element)) {
+      return false;
+    }
+    if (!isWithinIntroRoot(element)) {
+      return false;
+    }
+
+    const label = element.textContent || "";
+    const href = (element.getAttribute("href") || "").toLowerCase();
+    const isHighlighted = element.matches(
+      'a[data-highlight="true"], button[data-highlight="true"], [role="button"][data-highlight="true"]'
+    );
+    const hasVoteLikeLabel = isTargetLabel(label) || /\b(vote|confirm)\b/i.test(label);
+    const pointsToLegacyVoteFlow = /\/vote-phase\/home-back\b/.test(href) || /#panton2/.test(href);
+
+    // Keep the matcher strict enough to avoid menu tabs, but tolerant for mobile CTA variants.
+    if (!hasVoteLikeLabel) {
+      return false;
+    }
+
+    return isHighlighted || pointsToLegacyVoteFlow;
+  }
+
   function patchAnyVoteTextNode(node) {
     if (!(node instanceof HTMLElement)) {
       return;
@@ -138,6 +194,11 @@
 
     document.querySelectorAll(`${INTRO_ROOT_SELECTOR} a, ${INTRO_ROOT_SELECTOR} button, ${INTRO_ROOT_SELECTOR} [role='button']`).forEach((node) => {
       replaceLabelOnce(node);
+    });
+    document.querySelectorAll(
+      `${INTRO_ROOT_SELECTOR} a[data-highlight="true"], ${INTRO_ROOT_SELECTOR} button[data-highlight="true"], ${INTRO_ROOT_SELECTOR} [role='button'][data-highlight='true']`
+    ).forEach((node) => {
+      patchCtaActionElement(node);
     });
 
     patchVoteLabelsEverywhere();
@@ -385,6 +446,10 @@
     }, 150);
   }
 
+  function isFormCtaElement(element) {
+    return isPrimaryConfirmCtaElement(element);
+  }
+
   document.addEventListener(
     "click",
     (event) => {
@@ -404,8 +469,7 @@
       if (!isWithinIntroRoot(actionElement)) {
         return;
       }
-
-      if (!isTargetLabel(actionElement.textContent || "")) {
+      if (!isFormCtaElement(actionElement)) {
         return;
       }
 
@@ -428,4 +492,5 @@
 
   window.setTimeout(runPatchOnce, 500);
   window.setTimeout(runPatchOnce, 1500);
+  window.setTimeout(runPatchOnce, 3000);
 })();
