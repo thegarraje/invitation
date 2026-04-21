@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare:legacy-htm": "node scripts/prepare-legacy-htm.mjs",
+    "sync:legacy-copy": "node scripts/sync-legacy-copy.mjs",
+    "prepare:legacy-htm": "npm run sync:legacy-copy && node scripts/prepare-legacy-htm.mjs",
     "dev": "next dev",
     "build": "npm run prepare:legacy-htm && next build",
     "export": "npm run build",

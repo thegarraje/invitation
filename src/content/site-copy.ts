@@ -1,4 +1,6 @@
 import type { FooterSectionData, TimelineSectionData } from "@/types/content";
+export { CONFIRM_PAGE_COPY } from "@/content/sections/confirm";
+export { ADMIN_PAGE_COPY } from "@/content/sections/admin";
 
 export const SHARED_TIMELINE: TimelineSectionData = {
   id: "timeline",
@@ -65,17 +67,4 @@ export const TEST_SCENE_COPY = {
   subtitle: "Static-only behavior",
   description:
     "Form and vote interactions are intentionally local and non-persistent in this static rebuild."
-} as const;
-
-export const CONFIRM_PAGE_COPY = {
-  title: "ABG Meeting Confirmation Form",
-  iframeSrc: "https://8ncrc15q.forms.app/form/69e6c64b8c8898e1dd0c8b9f"
-} as const;
-
-export const ADMIN_PAGE_COPY = {
-  eyebrow: "Admin Panel",
-  title: "NDA Confirmations",
-  subtitle: "Records captured from the new confirm flow. Latest submissions appear first.",
-  openFormButton: "Open Confirm Form",
-  emptyState: "No submissions yet."
 } as const;

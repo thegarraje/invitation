@@ -1,4 +1,4 @@
-import { CONFIRM_PAGE_COPY } from "@/content/site-copy";
+import { CONFIRM_PAGE_COPY } from "@/content/sections/confirm";
 
 export default function ConfirmPage() {
   return (

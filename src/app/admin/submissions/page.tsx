@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ADMIN_PAGE_COPY } from "@/content/site-copy";
+import { ADMIN_PAGE_COPY } from "@/content/sections/admin";
 import { listConfirmSubmissions } from "@/lib/submission-store";
 
 export const dynamic = "force-dynamic";
@@ -31,13 +31,13 @@ export default async function AdminSubmissionsPage() {
           <table className="min-w-full divide-y divide-black/10 text-left text-sm">
             <thead className="bg-[#f8fbfb] text-xs uppercase tracking-[0.12em] text-black/60">
               <tr>
-                <th className="px-3 py-3">Submitted</th>
-                <th className="px-3 py-3">Participant</th>
-                <th className="px-3 py-3">Contact</th>
-                <th className="px-3 py-3">Clinic</th>
-                <th className="px-3 py-3">Attendance</th>
-                <th className="px-3 py-3">Signature</th>
-                <th className="px-3 py-3">Email</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.submitted}</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.participant}</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.contact}</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.clinic}</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.attendance}</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.signature}</th>
+                <th className="px-3 py-3">{ADMIN_PAGE_COPY.tableHeaders.email}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5">

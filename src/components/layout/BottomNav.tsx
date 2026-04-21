@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { RouteScene } from "@/types/content";
+import { NAVIGATION_COPY } from "@/content/navigation";
 
 interface BottomNavProps {
   scene: RouteScene;
@@ -9,15 +10,15 @@ export function BottomNav({ scene }: BottomNavProps) {
   return (
     <div className="fixed bottom-6 left-1/2 z-50 w-[min(90vw,540px)] -translate-x-1/2 rounded-[1.25rem] border border-black/10 bg-[#e9f2f4] px-3 py-2 text-[#3a001a] shadow-xl backdrop-blur">
       <div className="grid grid-cols-[40px_1fr_40px] items-center gap-2">
-        <NavArrow href={scene.nav.prev} label="Previous" direction="left" />
+        <NavArrow href={scene.nav.prev} label={NAVIGATION_COPY.previousLabel} direction="left" />
 
         <div className="grid grid-cols-3 items-center gap-2 text-center">
-          <AnchorChip href="#hero" label="Intro" />
-          <AnchorChip href="#timeline" label="About" />
-          <AnchorChip href="#colors" label="Colours" />
+          <AnchorChip href="#hero" label={NAVIGATION_COPY.tabs.intro} />
+          <AnchorChip href="#timeline" label={NAVIGATION_COPY.tabs.about} />
+          <AnchorChip href="#colors" label={NAVIGATION_COPY.tabs.colours} />
         </div>
 
-        <NavArrow href={scene.nav.next} label="Next" direction="right" />
+        <NavArrow href={scene.nav.next} label={NAVIGATION_COPY.nextLabel} direction="right" />
       </div>
 
       <div className="mt-2 flex items-center justify-between gap-3">
@@ -27,10 +28,14 @@ export function BottomNav({ scene }: BottomNavProps) {
           rel={scene.hero.ctaHref?.startsWith("http") ? "noreferrer" : undefined}
           className="rounded-full bg-[#f16e2a] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:brightness-95"
         >
-          {scene.hero.ctaLabel || "Explore"}
+          {scene.hero.ctaLabel || NAVIGATION_COPY.ctaFallback}
         </Link>
 
-        <Link href="/" aria-label="ABG Meeting" className="inline-flex h-[27px] w-[82px] items-center justify-center">
+        <Link
+          href={NAVIGATION_COPY.links.home}
+          aria-label={NAVIGATION_COPY.brandLabel}
+          className="inline-flex h-[27px] w-[82px] items-center justify-center"
+        >
           <svg
             viewBox="0 0 82 27"
             role="img"
@@ -47,18 +52,18 @@ export function BottomNav({ scene }: BottomNavProps) {
               fontSize="8.8"
               fontWeight="700"
             >
-              ABG MEETING
+              {NAVIGATION_COPY.brandLabel}
             </text>
           </svg>
         </Link>
 
         <Link
-          href="https://www.instagram.com/vitra"
+          href={NAVIGATION_COPY.links.instagram}
           target="_blank"
           rel="noreferrer"
           className="rounded-full border border-[#3a001a]/25 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em]"
         >
-          Instagram
+          {NAVIGATION_COPY.instagramLabel}
         </Link>
       </div>
     </div>
