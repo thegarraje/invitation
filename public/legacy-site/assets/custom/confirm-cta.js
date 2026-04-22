@@ -322,7 +322,7 @@
   }
 
   function disableSubjectsActionEverywhere() {
-    document.querySelectorAll("a,button,[role='button'],[data-nested-link][href]").forEach((node) => {
+    document.querySelectorAll("a,button,[role='button'],[data-nested-link],[href]").forEach((node) => {
       if (!(node instanceof HTMLElement)) {
         return;
       }
@@ -335,13 +335,34 @@
       action.setAttribute("aria-disabled", "true");
       action.style.setProperty("cursor", "default", "important");
       action.style.setProperty("pointer-events", "none", "important");
+      action.removeAttribute("href");
+      action.removeAttribute("target");
+      action.removeAttribute("rel");
+      action.removeAttribute("data-nested-link");
+    });
+  }
 
-      if (action instanceof HTMLAnchorElement) {
-        action.setAttribute("href", "#");
-        action.removeAttribute("target");
-      } else {
-        action.setAttribute("href", "#");
+  function neutralizeSubjectCardRouteTargets() {
+    document.querySelectorAll("[href], [data-nested-link]").forEach((node) => {
+      if (!(node instanceof HTMLElement)) {
+        return;
       }
+
+      const rawHref = node.getAttribute("href") || "";
+      const nestedHref = node.getAttribute("data-href") || "";
+      const shouldBlock = isSubjectCardHref(rawHref) || isSubjectCardHref(nestedHref);
+      if (!shouldBlock) {
+        return;
+      }
+
+      node.dataset.abgSubjectCardDisabled = "1";
+      node.setAttribute("aria-disabled", "true");
+      node.style.setProperty("cursor", "default", "important");
+      node.style.setProperty("pointer-events", "none", "important");
+      node.removeAttribute("href");
+      node.removeAttribute("target");
+      node.removeAttribute("rel");
+      node.removeAttribute("data-nested-link");
     });
   }
 
@@ -1295,6 +1316,7 @@
 
     patchVoteLabelsEverywhere();
     patchSubjectsLabelEverywhere();
+    neutralizeSubjectCardRouteTargets();
     disableSubjectsActionEverywhere();
     patchColorTitleLabelsEverywhere();
     ensureRealtimeCountdownTicker();
