@@ -114,30 +114,32 @@
     );
   }
 
-  function isSubjectCardActionElement(element) {
-    if (!isLandingPage()) {
-      return false;
-    }
-
+  function getSubjectCardActionElement(element) {
     if (!(element instanceof Element)) {
-      return false;
+      return null;
     }
 
-    const action = element.closest("a,button,[role='button']");
+    const action = element.closest("a,button,[role='button'],[data-nested-link][href]");
     if (!(action instanceof HTMLElement)) {
-      return false;
+      return null;
     }
 
-    const actionHref = action.getAttribute("href") || "";
+    const actionHref = action.getAttribute("href") || action.getAttribute("data-href") || "";
     if (isSubjectCardHref(actionHref)) {
-      return true;
+      return action;
     }
 
     if (action instanceof HTMLAnchorElement) {
-      return isSubjectCardHref(action.href);
+      if (isSubjectCardHref(action.href)) {
+        return action;
+      }
     }
 
-    return false;
+    return null;
+  }
+
+  function isSubjectCardActionElement(element) {
+    return getSubjectCardActionElement(element) instanceof HTMLElement;
   }
 
   function redirectTop() {
@@ -279,6 +281,31 @@
     });
   }
 
+  function ensureSubjectCardLinksBlockedStyle() {
+    let styleNode = document.getElementById("abg-subject-card-block-style");
+    if (!(styleNode instanceof HTMLStyleElement)) {
+      styleNode = document.createElement("style");
+      styleNode.id = "abg-subject-card-block-style";
+      document.head.appendChild(styleNode);
+    }
+
+    styleNode.textContent = `
+      a[href*="/gap-phase/colors/"],
+      a[href*="/gap-phase/winning/"],
+      a[href*="/vote-phase/colors/"],
+      a[href*="/vote-phase/scoreboard/"],
+      a[href*="/vote-end-phase/colors/"],
+      [data-nested-link][href*="/gap-phase/colors/"],
+      [data-nested-link][href*="/gap-phase/winning/"],
+      [data-nested-link][href*="/vote-phase/colors/"],
+      [data-nested-link][href*="/vote-phase/scoreboard/"],
+      [data-nested-link][href*="/vote-end-phase/colors/"] {
+        pointer-events: none !important;
+        cursor: default !important;
+      }
+    `;
+  }
+
   function patchSubjectsLabelEverywhere() {
     document.querySelectorAll(".framer-text").forEach((node) => {
       if (!(node instanceof HTMLElement)) {
@@ -295,19 +322,25 @@
   }
 
   function disableSubjectsActionEverywhere() {
-    document.querySelectorAll("a,button,[role='button']").forEach((node) => {
+    document.querySelectorAll("a,button,[role='button'],[data-nested-link][href]").forEach((node) => {
       if (!(node instanceof HTMLElement)) {
         return;
       }
-      if (!isSubjectCardActionElement(node)) {
+      const action = getSubjectCardActionElement(node);
+      if (!(action instanceof HTMLElement)) {
         return;
       }
 
-      node.dataset.abgSubjectCardDisabled = "1";
-      node.setAttribute("aria-disabled", "true");
-      if (node instanceof HTMLAnchorElement) {
-        node.setAttribute("href", "#");
-        node.removeAttribute("target");
+      action.dataset.abgSubjectCardDisabled = "1";
+      action.setAttribute("aria-disabled", "true");
+      action.style.setProperty("cursor", "default", "important");
+      action.style.setProperty("pointer-events", "none", "important");
+
+      if (action instanceof HTMLAnchorElement) {
+        action.setAttribute("href", "#");
+        action.removeAttribute("target");
+      } else {
+        action.setAttribute("href", "#");
       }
     });
   }
@@ -1249,6 +1282,8 @@
   }
 
   function runPatchOnce() {
+    ensureSubjectCardLinksBlockedStyle();
+
     document.querySelectorAll(`${INTRO_ROOT_SELECTOR} a, ${INTRO_ROOT_SELECTOR} button, ${INTRO_ROOT_SELECTOR} [role='button']`).forEach((node) => {
       replaceLabelOnce(node);
     });
@@ -1538,7 +1573,7 @@
       window.setTimeout(runPatchOnce, 120);
       window.setTimeout(runPatchOnce, 360);
 
-      const actionElement = target.closest("a,button,[role='button']");
+      const actionElement = target.closest("a,button,[role='button'],[data-nested-link][href]");
       if (!actionElement) {
         return;
       }
