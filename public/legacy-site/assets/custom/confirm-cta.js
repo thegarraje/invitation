@@ -41,7 +41,7 @@
     ["flash red", "Beyond Systems"],
     ["deep magenta", "Deep Project"],
     ["deep era", "Deep Project"],
-    ["ultra violet", "Infra Scale"],
+    ["ultra violet", "Global Scale"],
     ["strong purple", "New Positioning"],
     ["electric blue", "Private Meeting"],
     ["bright turquoise", "Selective Access"],
