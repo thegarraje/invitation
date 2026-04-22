@@ -16,7 +16,7 @@ export function BottomNav({ scene }: BottomNavProps) {
         <div className="grid grid-cols-3 items-center gap-2 text-center">
           <AnchorChip href="#hero" label={NAVIGATION_COPY.tabs.intro} />
           <AnchorChip href="#timeline" label={NAVIGATION_COPY.tabs.about} />
-          <AnchorChip label={NAVIGATION_COPY.tabs.colours} disabled />
+          <AnchorChip href="#colors" label={NAVIGATION_COPY.tabs.colours} />
         </div>
 
         <NavArrow href={scene.nav.next} label={NAVIGATION_COPY.nextLabel} direction="right" />

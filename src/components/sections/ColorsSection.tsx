@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import type { ColorsSectionData } from "@/types/content";
 import { motionPresets } from "@/lib/motion";
@@ -32,16 +31,16 @@ export function ColorsSection({ colors }: ColorsSectionProps) {
               }
               viewport={prefersReducedMotion ? undefined : reveal.viewport}
             >
-              <Link
-                href={link.href}
-                className={`block rounded-xl border px-4 py-3 text-sm font-medium transition ${
+              <div
+                aria-disabled="true"
+                className={`block cursor-default rounded-xl border px-4 py-3 text-sm font-medium transition ${
                   link.active
                     ? "border-[#f16e2a] bg-[#f16e2a]/20 text-white"
-                    : "border-white/25 bg-white/5 text-[#ebf9fa] hover:bg-white/10"
+                    : "border-white/25 bg-white/5 text-[#ebf9fa]"
                 }`}
               >
                 {link.label}
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>

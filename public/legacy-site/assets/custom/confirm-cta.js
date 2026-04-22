@@ -107,7 +107,18 @@
     return clean === "subjects" || clean === "colours" || clean === "colors";
   }
 
-  function isSubjectsActionElement(element) {
+  function isSubjectCardHref(href) {
+    const value = String(href || "").toLowerCase();
+    return /\/(?:gap-phase\/(?:colors|winning)|vote-phase\/(?:colors|scoreboard)|vote-end-phase\/colors)\/[a-z0-9-]+(?:[/?#]|$)/.test(
+      value
+    );
+  }
+
+  function isSubjectCardActionElement(element) {
+    if (!isLandingPage()) {
+      return false;
+    }
+
     if (!(element instanceof Element)) {
       return false;
     }
@@ -117,16 +128,16 @@
       return false;
     }
 
-    const textNodes = Array.from(action.querySelectorAll(".framer-text"))
-      .filter((node) => node instanceof HTMLElement)
-      .map((node) => normalize(node.textContent || ""))
-      .filter((text) => text.length > 0);
-
-    if (textNodes.length > 0) {
-      return textNodes.some((text) => isSubjectsLabel(text));
+    const actionHref = action.getAttribute("href") || "";
+    if (isSubjectCardHref(actionHref)) {
+      return true;
     }
 
-    return isSubjectsLabel(action.textContent || "");
+    if (action instanceof HTMLAnchorElement) {
+      return isSubjectCardHref(action.href);
+    }
+
+    return false;
   }
 
   function redirectTop() {
@@ -288,11 +299,11 @@
       if (!(node instanceof HTMLElement)) {
         return;
       }
-      if (!isSubjectsActionElement(node)) {
+      if (!isSubjectCardActionElement(node)) {
         return;
       }
 
-      node.dataset.abgSubjectsDisabled = "1";
+      node.dataset.abgSubjectCardDisabled = "1";
       node.setAttribute("aria-disabled", "true");
       if (node instanceof HTMLAnchorElement) {
         node.setAttribute("href", "#");
@@ -1531,7 +1542,7 @@
       if (!actionElement) {
         return;
       }
-      if (isSubjectsActionElement(actionElement)) {
+      if (isSubjectCardActionElement(actionElement)) {
         event.preventDefault();
         event.stopPropagation();
         return;
