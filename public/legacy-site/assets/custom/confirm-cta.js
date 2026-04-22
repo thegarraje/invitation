@@ -52,6 +52,7 @@
     Array.from(COLOR_LABEL_REPLACEMENTS.entries()).map(([label, replacement]) => [label.replace(/\s+/g, ""), replacement])
   );
   const COUNTDOWN_VALUE_PATTERN = /^\d{1,4}:\d{2}:\d{2}:\d{2}$/;
+  const COUNTDOWN_LABEL_PATTERN = /^\s*days?\s+left\s+to\s+(vote|confirm)\s*$/i;
   let countdownEndAtMs = null;
   let countdownTickTimer = null;
 
@@ -368,8 +369,8 @@
       return;
     }
 
-    const normalized = normalize(node.textContent || "");
-    if (!normalized.includes("left to vote") && !normalized.includes("left to confirm")) {
+    const rawLabel = (node.textContent || "").replace(/\s+/g, " ").trim();
+    if (!COUNTDOWN_LABEL_PATTERN.test(rawLabel)) {
       return;
     }
 
@@ -392,16 +393,16 @@
 
   function patchRealtimeCountdown() {
     const countdownValue = formatCountdownValue();
-    document.querySelectorAll("p, h5, h6, span, div, strong, b").forEach((node) => {
-      if (!(node instanceof HTMLElement)) {
-        return;
-      }
-
-      if (isCountdownValueNode(node)) {
+    document.querySelectorAll("p, h5, h6, span, strong, b").forEach((node) => {
+      if (node instanceof HTMLElement && isCountdownValueNode(node)) {
         node.textContent = countdownValue;
       }
+    });
 
-      patchCountdownLabelNode(node);
+    document.querySelectorAll("h5, p, span").forEach((node) => {
+      if (node instanceof HTMLElement) {
+        patchCountdownLabelNode(node);
+      }
     });
   }
 
