@@ -62,6 +62,23 @@
       .replace(/\/+$/, "");
   }
 
+  function isSubjectRoutePath(pathname) {
+    const normalized = normalizePathname(pathname).replace(/\.html?$/, "");
+    return /^\/(?:legacy-site\/)?(?:gap-phase\/(?:colors|winning)|vote-phase\/(?:colors|scoreboard)|vote-end-phase\/colors)\/[a-z0-9-]+$/.test(
+      normalized
+    );
+  }
+
+  function maybeRedirectSubjectRouteToHome() {
+    if (!isSubjectRoutePath(window.location.pathname)) {
+      return false;
+    }
+
+    const destination = "/legacy-site/old-home.html#colors";
+    window.location.replace(destination);
+    return true;
+  }
+
   function isLandingPage() {
     const path = normalizePathname(window.location.pathname);
     if (path === "" || path === "/") {
@@ -1641,6 +1658,10 @@
       childList: true,
       characterData: true
     });
+  }
+
+  if (maybeRedirectSubjectRouteToHome()) {
+    return;
   }
 
   if (document.readyState === "loading") {
