@@ -13,16 +13,16 @@ export function ScenePage({ path, rawPath }: ScenePageProps) {
   const legacyMirrorPath = getLegacyMirrorPath(path);
 
   if (!scene) {
-    const convertedRawPath = rawPath?.endsWith(".html")
-      ? rawPath.replace(/\.html$/, ".htm")
+    const convertedRawPath = rawPath?.endsWith(".htm")
+      ? rawPath.replace(/\.htm$/, ".html")
       : rawPath;
 
     const directLegacyPath =
-      convertedRawPath && convertedRawPath.endsWith(".htm")
+      convertedRawPath && convertedRawPath.endsWith(".html")
         ? `/legacy-site${convertedRawPath}`
         : path === "/"
-          ? "/legacy-site/old-home.htm"
-          : `/legacy-site${path}.htm`;
+          ? "/legacy-site/old-home.html"
+          : `/legacy-site${path}.html`;
 
     return <LegacyMirror src={directLegacyPath} title={`Legacy mirror for ${rawPath ?? path}`} />;
   }

@@ -38,14 +38,15 @@
   };
   const INTRO_ROOT_SELECTOR = '[data-framer-name="D - intro"], [data-framer-name="T - intro"], [data-framer-name="M - intro"]';
   const COLOR_LABEL_REPLACEMENTS = new Map([
-    ["flash red", "Beyond SYSTEMS"],
-    ["deep magenta", "Deep Infrastructure"],
+    ["flash red", "Beyond Systems"],
+    ["deep magenta", "Deep Project"],
+    ["deep era", "Deep Project"],
     ["ultra violet", "Ultra Scale"],
     ["strong purple", "New Positioning"],
     ["electric blue", "Private Meeting"],
     ["bright turquoise", "Selective Access"],
-    ["bold orange", "A RARE\nMOMENT"],
-    ["a rare moment", "A RARE\nMOMENT"]
+    ["bold orange", "A Rare\nMoment"],
+    ["a rare moment", "A Rare\nMoment"]
   ]);
   const COLOR_LABEL_COMPACT_REPLACEMENTS = new Map(
     Array.from(COLOR_LABEL_REPLACEMENTS.entries()).map(([label, replacement]) => [label.replace(/\s+/g, ""), replacement])

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface LegacyMirrorProps {
   src: string;
@@ -8,32 +8,25 @@ interface LegacyMirrorProps {
 }
 
 export function LegacyMirror({ src, title }: LegacyMirrorProps) {
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      if (!iframeLoaded) {
-        window.location.replace(src);
-      }
-    }, 4500);
-
-    return () => window.clearTimeout(timeout);
-  }, [iframeLoaded, src]);
-
-  const handleIframeError = () => {
-    window.location.replace(src);
-  };
+  const [iframeError, setIframeError] = useState(false);
 
   return (
     <main className="h-screen w-screen overflow-hidden bg-[#0c607e]">
+      {iframeError ? (
+        <div className="absolute inset-x-4 top-4 z-10 rounded-xl bg-white/95 px-4 py-3 text-sm text-[#3a001a] shadow-lg">
+          Could not load legacy view inline. Open directly:{" "}
+          <a className="underline" href={src}>
+            {src}
+          </a>
+        </div>
+      ) : null}
       <iframe
         src={src}
         title={title}
         className="h-full w-full border-0"
         loading="eager"
         referrerPolicy="no-referrer"
-        onLoad={() => setIframeLoaded(true)}
-        onError={handleIframeError}
+        onError={() => setIframeError(true)}
       />
     </main>
   );

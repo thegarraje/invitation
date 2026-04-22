@@ -12,7 +12,7 @@ export interface ColorVariant {
 export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   blue: {
     key: "blue",
-    label: "Electric Blue",
+    label: "Private Meeting",
     shortLabel: "Blue",
     tagline: "A deep oceanic tone balancing intensity and clarity.",
     voteCTA: "Confirm",
@@ -26,7 +26,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   magenta: {
     key: "magenta",
-    label: "Deep Magenta",
+    label: "Deep Project",
     shortLabel: "Magenta",
     tagline: "A rich chromatic accent with theatrical warmth.",
     voteCTA: "Confirm",
@@ -40,7 +40,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   orange: {
     key: "orange",
-    label: "Bold Orange",
+    label: "A Rare\nMoment",
     shortLabel: "Orange",
     tagline: "A strong industrial orange with a sculptural presence.",
     voteCTA: "Confirm",
@@ -54,7 +54,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   purple: {
     key: "purple",
-    label: "Strong Purple",
+    label: "New Positioning",
     shortLabel: "Purple",
     tagline: "A saturated tone inspired by iconic experimental interiors.",
     voteCTA: "Confirm",
@@ -68,7 +68,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   red: {
     key: "red",
-    label: "Flash Red",
+    label: "Beyond Systems",
     shortLabel: "Red",
     tagline: "A vivid red statement designed to energize spaces.",
     voteCTA: "Confirm",
@@ -82,7 +82,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   turquoise: {
     key: "turquoise",
-    label: "Bright Turquoise",
+    label: "Selective Access",
     shortLabel: "Turquoise",
     tagline: "A bright optimistic hue with crisp architectural contrast.",
     voteCTA: "Confirm",
@@ -96,7 +96,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   violet: {
     key: "violet",
-    label: "Ultra Violet",
+    label: "Ultra Scale",
     shortLabel: "Violet",
     tagline: "A futuristic violet with bold depth and character.",
     voteCTA: "Confirm",
