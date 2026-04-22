@@ -320,6 +320,11 @@
         pointer-events: none !important;
         cursor: default !important;
       }
+
+      [data-framer-name*="pick color cards" i],
+      [data-framer-name*="pick colour cards" i] {
+        pointer-events: none !important;
+      }
     `;
   }
 
@@ -376,6 +381,42 @@
       node.setAttribute("aria-disabled", "true");
       node.style.setProperty("cursor", "default", "important");
       node.style.setProperty("pointer-events", "none", "important");
+      node.removeAttribute("href");
+      node.removeAttribute("target");
+      node.removeAttribute("rel");
+      node.removeAttribute("data-nested-link");
+    });
+  }
+
+  function disablePickColorCardInteractions() {
+    const pickColorContainers = Array.from(
+      document.querySelectorAll('[data-framer-name*="pick color cards" i], [data-framer-name*="pick colour cards" i]')
+    ).filter((node) => node instanceof HTMLElement);
+
+    pickColorContainers.forEach((container) => {
+      container.style.setProperty("pointer-events", "none", "important");
+      container.querySelectorAll("a, [data-nested-link]").forEach((node) => {
+        if (!(node instanceof HTMLElement)) {
+          return;
+        }
+        node.setAttribute("aria-disabled", "true");
+        node.style.setProperty("pointer-events", "none", "important");
+        node.style.setProperty("cursor", "default", "important");
+        node.removeAttribute("href");
+        node.removeAttribute("target");
+        node.removeAttribute("rel");
+        node.removeAttribute("data-nested-link");
+      });
+    });
+
+    // Fallback for card-like Framer anchors even if container naming changes.
+    document.querySelectorAll('a[data-framer-name="Card"], [data-nested-link][data-framer-name="Card"]').forEach((node) => {
+      if (!(node instanceof HTMLElement)) {
+        return;
+      }
+      node.setAttribute("aria-disabled", "true");
+      node.style.setProperty("pointer-events", "none", "important");
+      node.style.setProperty("cursor", "default", "important");
       node.removeAttribute("href");
       node.removeAttribute("target");
       node.removeAttribute("rel");
@@ -1169,6 +1210,10 @@
       return false;
     }
 
+    if (anchor.closest('[data-framer-name*="pick color" i], [data-framer-name*="pick colour" i]')) {
+      return false;
+    }
+
     if (href.includes(SETTINGS.targetPath)) {
       return false;
     }
@@ -1335,6 +1380,7 @@
     patchSubjectsLabelEverywhere();
     neutralizeSubjectCardRouteTargets();
     disableSubjectsActionEverywhere();
+    disablePickColorCardInteractions();
     patchColorTitleLabelsEverywhere();
     ensureRealtimeCountdownTicker();
     ensureMobileTopBar();
