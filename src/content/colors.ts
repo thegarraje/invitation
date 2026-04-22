@@ -96,7 +96,7 @@ export const COLOR_VARIANTS: Record<ColorKey, ColorVariant> = {
   },
   violet: {
     key: "violet",
-    label: "Ultra Scale",
+    label: "Infra Scale",
     shortLabel: "Violet",
     tagline: "A futuristic violet with bold depth and character.",
     voteCTA: "Confirm",
