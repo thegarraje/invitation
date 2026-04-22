@@ -1,17 +1,17 @@
 export const NAVIGATION_COPY = {
   links: {
     home: "/",
-    instagram: "https://www.instagram.com/vitra"
+    whatsapp: "https://wa.me/17867786843"
   },
   brandLogoSrc: "/assets/brand/american-medical-board.svg",
   tabs: {
     intro: "Intro",
     about: "About",
-    colours: "Colours"
+    colours: "Subjects"
   },
   ctaFallback: "Explore",
   brandLabel: "American Medical Board",
-  instagramLabel: "Instagram",
+  whatsappLabel: "WhatsApp",
   previousLabel: "Previous",
   nextLabel: "Next"
 } as const;

@@ -16,7 +16,7 @@ export function BottomNav({ scene }: BottomNavProps) {
         <div className="grid grid-cols-3 items-center gap-2 text-center">
           <AnchorChip href="#hero" label={NAVIGATION_COPY.tabs.intro} />
           <AnchorChip href="#timeline" label={NAVIGATION_COPY.tabs.about} />
-          <AnchorChip href="#colors" label={NAVIGATION_COPY.tabs.colours} />
+          <AnchorChip label={NAVIGATION_COPY.tabs.colours} disabled />
         </div>
 
         <NavArrow href={scene.nav.next} label={NAVIGATION_COPY.nextLabel} direction="right" />
@@ -49,12 +49,20 @@ export function BottomNav({ scene }: BottomNavProps) {
         </Link>
 
         <Link
-          href={NAVIGATION_COPY.links.instagram}
+          href={NAVIGATION_COPY.links.whatsapp}
           target="_blank"
-          rel="noreferrer"
-          className="rounded-full border border-[#3a001a]/25 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em]"
+          rel="noopener noreferrer"
+          aria-label={NAVIGATION_COPY.whatsappLabel}
+          className="inline-flex h-[34px] w-[34px] items-center justify-center rounded-full border border-[#3a001a]/25"
         >
-          {NAVIGATION_COPY.instagramLabel}
+          <Image
+            src="/assets/icons/whatsapp.svg"
+            alt={NAVIGATION_COPY.whatsappLabel}
+            width={18}
+            height={18}
+            className="h-[18px] w-[18px]"
+            draggable={false}
+          />
         </Link>
       </div>
     </div>
@@ -85,11 +93,25 @@ function NavArrow({
   );
 }
 
-function AnchorChip({ href, label }: { href: string; label: string }) {
+function AnchorChip({ href, label, disabled = false }: { href?: string; label: string; disabled?: boolean }) {
+  const className =
+    "rounded-full border border-transparent px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a001a]/75 transition";
+
+  if (disabled || !href) {
+    return (
+      <span
+        aria-disabled="true"
+        className={`${className} cursor-default`}
+      >
+        {label}
+      </span>
+    );
+  }
+
   return (
     <a
       href={href}
-      className="rounded-full border border-transparent px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a001a]/75 transition hover:border-[#3a001a]/20"
+      className={`${className} hover:border-[#3a001a]/20`}
     >
       {label}
     </a>

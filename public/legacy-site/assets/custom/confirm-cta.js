@@ -102,6 +102,33 @@
     return SETTINGS.acceptedLabels.includes(clean);
   }
 
+  function isSubjectsLabel(text) {
+    const clean = normalize(text);
+    return clean === "subjects" || clean === "colours" || clean === "colors";
+  }
+
+  function isSubjectsActionElement(element) {
+    if (!(element instanceof Element)) {
+      return false;
+    }
+
+    const action = element.closest("a,button,[role='button']");
+    if (!(action instanceof HTMLElement)) {
+      return false;
+    }
+
+    const textNodes = Array.from(action.querySelectorAll(".framer-text"))
+      .filter((node) => node instanceof HTMLElement)
+      .map((node) => normalize(node.textContent || ""))
+      .filter((text) => text.length > 0);
+
+    if (textNodes.length > 0) {
+      return textNodes.some((text) => isSubjectsLabel(text));
+    }
+
+    return isSubjectsLabel(action.textContent || "");
+  }
+
   function redirectTop() {
     if (window.top && window.top !== window) {
       window.top.location.href = SETTINGS.targetPath;
@@ -253,6 +280,24 @@
       }
 
       node.textContent = SETTINGS.subjectsLabel;
+    });
+  }
+
+  function disableSubjectsActionEverywhere() {
+    document.querySelectorAll("a,button,[role='button']").forEach((node) => {
+      if (!(node instanceof HTMLElement)) {
+        return;
+      }
+      if (!isSubjectsActionElement(node)) {
+        return;
+      }
+
+      node.dataset.abgSubjectsDisabled = "1";
+      node.setAttribute("aria-disabled", "true");
+      if (node instanceof HTMLAnchorElement) {
+        node.setAttribute("href", "#");
+        node.removeAttribute("target");
+      }
     });
   }
 
@@ -1204,6 +1249,7 @@
 
     patchVoteLabelsEverywhere();
     patchSubjectsLabelEverywhere();
+    disableSubjectsActionEverywhere();
     patchColorTitleLabelsEverywhere();
     ensureRealtimeCountdownTicker();
     ensureMobileTopBar();
@@ -1483,6 +1529,11 @@
 
       const actionElement = target.closest("a,button,[role='button']");
       if (!actionElement) {
+        return;
+      }
+      if (isSubjectsActionElement(actionElement)) {
+        event.preventDefault();
+        event.stopPropagation();
         return;
       }
       if (!isFormCtaElement(actionElement)) {
