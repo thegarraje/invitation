@@ -218,21 +218,6 @@
     return getSubjectCardActionElement(element) instanceof HTMLElement;
   }
 
-  const SUBJECT_CARD_REGION_SELECTOR = [
-    '[data-framer-name*="pickcolor" i]',
-    '[data-framer-name*="pick-color" i]',
-    '[data-framer-name*="pick colour" i]',
-    '[data-framer-name*="cards-content" i]',
-    '[data-framer-name*="cards-component" i]'
-  ].join(",");
-
-  function isInsideSubjectCardRegion(element) {
-    if (!(element instanceof Element)) {
-      return false;
-    }
-    return Boolean(element.closest(SUBJECT_CARD_REGION_SELECTOR));
-  }
-
   function stopEventCompletely(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -389,23 +374,11 @@
     }
 
     styleNode.textContent = `
-      a[href*="/gap-phase/colors/"],
-      a[href*="/gap-phase/winning/"],
-      a[href*="/vote-phase/colors/"],
-      a[href*="/vote-phase/scoreboard/"],
-      a[href*="/vote-end-phase/colors/"],
-      [data-nested-link][href*="/gap-phase/colors/"],
-      [data-nested-link][href*="/gap-phase/winning/"],
-      [data-nested-link][href*="/vote-phase/colors/"],
-      [data-nested-link][href*="/vote-phase/scoreboard/"],
-      [data-nested-link][href*="/vote-end-phase/colors/"] {
-        pointer-events: none !important;
-        cursor: default !important;
-      }
-
       [data-framer-name*="pick color cards" i],
-      [data-framer-name*="pick colour cards" i] {
-        pointer-events: none !important;
+      [data-framer-name*="pick colour cards" i],
+      [data-framer-name*="cards-content" i],
+      [data-framer-name*="cards-component" i] {
+        pointer-events: auto !important;
       }
     `;
   }
@@ -436,9 +409,7 @@
       }
 
       action.dataset.abgSubjectCardDisabled = "1";
-      action.setAttribute("aria-disabled", "true");
-      action.style.setProperty("cursor", "default", "important");
-      action.style.setProperty("pointer-events", "none", "important");
+      action.removeAttribute("aria-disabled");
       action.removeAttribute("href");
       action.removeAttribute("target");
       action.removeAttribute("rel");
@@ -460,9 +431,7 @@
       }
 
       node.dataset.abgSubjectCardDisabled = "1";
-      node.setAttribute("aria-disabled", "true");
-      node.style.setProperty("cursor", "default", "important");
-      node.style.setProperty("pointer-events", "none", "important");
+      node.removeAttribute("aria-disabled");
       node.removeAttribute("href");
       node.removeAttribute("target");
       node.removeAttribute("rel");
@@ -476,14 +445,14 @@
     ).filter((node) => node instanceof HTMLElement);
 
     pickColorContainers.forEach((container) => {
-      container.style.setProperty("pointer-events", "none", "important");
       container.querySelectorAll("a, [data-nested-link]").forEach((node) => {
         if (!(node instanceof HTMLElement)) {
           return;
         }
-        node.setAttribute("aria-disabled", "true");
-        node.style.setProperty("pointer-events", "none", "important");
-        node.style.setProperty("cursor", "default", "important");
+        const href = node.getAttribute("href") || node.getAttribute("data-href") || "";
+        if (!isSubjectCardHref(href)) {
+          return;
+        }
         node.removeAttribute("href");
         node.removeAttribute("target");
         node.removeAttribute("rel");
@@ -496,9 +465,10 @@
       if (!(node instanceof HTMLElement)) {
         return;
       }
-      node.setAttribute("aria-disabled", "true");
-      node.style.setProperty("pointer-events", "none", "important");
-      node.style.setProperty("cursor", "default", "important");
+      const href = node.getAttribute("href") || node.getAttribute("data-href") || "";
+      if (!isSubjectCardHref(href)) {
+        return;
+      }
       node.removeAttribute("href");
       node.removeAttribute("target");
       node.removeAttribute("rel");
@@ -1742,15 +1712,11 @@
       window.setTimeout(runPatchOnce, 360);
 
       const actionElement = target.closest("a,button,[role='button'],[data-nested-link][href]");
-      if (isInsideSubjectCardRegion(target)) {
-        stopEventCompletely(event);
-        return;
-      }
       if (!actionElement) {
         return;
       }
       if (isSubjectCardActionElement(actionElement)) {
-        stopEventCompletely(event);
+        event.preventDefault();
         return;
       }
       if (!isFormCtaElement(actionElement)) {
@@ -1763,20 +1729,6 @@
     },
     true
   );
-
-  const swallowSubjectRegionEvent = (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) {
-      return;
-    }
-    if (!isInsideSubjectCardRegion(target)) {
-      return;
-    }
-    stopEventCompletely(event);
-  };
-  ["pointerdown", "mousedown", "touchstart"].forEach((eventName) => {
-    document.addEventListener(eventName, swallowSubjectRegionEvent, true);
-  });
 
   let patchScheduled = false;
   function schedulePatch() {
