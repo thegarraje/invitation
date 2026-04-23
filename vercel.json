@@ -1,6 +1,26 @@
 {
   "redirects": [
     {
+      "source": "/legacy-site",
+      "destination": "/legacy-site/old-home.html",
+      "permanent": false
+    },
+    {
+      "source": "/legacy-site/",
+      "destination": "/legacy-site/old-home.html",
+      "permanent": false
+    },
+    {
+      "source": "/legacy-site/index.html",
+      "destination": "/legacy-site/old-home.html",
+      "permanent": false
+    },
+    {
+      "source": "/legacy-site/index.htm",
+      "destination": "/legacy-site/old-home.html",
+      "permanent": false
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": false

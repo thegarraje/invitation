@@ -91,6 +91,33 @@
     return true;
   }
 
+  function maybeRedirectLegacyIndexToOldHome() {
+    const normalized = normalizePathname(window.location.pathname);
+    const legacyIndexPaths = new Set([
+      "",
+      "/",
+      "/index",
+      "/index.html",
+      "/index.htm",
+      "/legacy-site",
+      "/legacy-site/index",
+      "/legacy-site/index.html",
+      "/legacy-site/index.htm"
+    ]);
+
+    if (!legacyIndexPaths.has(normalized)) {
+      return false;
+    }
+
+    const hash = window.location.hash || "";
+    const destination = `/legacy-site/old-home.html${hash}`;
+    if (`${normalized}${hash}` === `/legacy-site/old-home.html${hash}`) {
+      return false;
+    }
+    window.location.replace(destination);
+    return true;
+  }
+
   let historyGuardInstalled = false;
   function ensureSubjectNavigationGuard() {
     if (historyGuardInstalled) {
@@ -1757,7 +1784,7 @@
     });
   }
 
-  if (maybeRedirectSubjectRouteToHome()) {
+  if (maybeRedirectLegacyIndexToOldHome() || maybeRedirectSubjectRouteToHome()) {
     return;
   }
 

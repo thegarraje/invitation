@@ -1,5 +1,5 @@
-import { ScenePage } from "@/components/layout/ScenePage";
+import { redirect } from "next/navigation";
 
 export default function VoteHomeBackPage() {
-  return <ScenePage path="/vote-phase/home-back" />;
+  redirect("/legacy-site/old-home.html");
 }
