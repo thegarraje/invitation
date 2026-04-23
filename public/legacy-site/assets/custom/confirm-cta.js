@@ -69,6 +69,18 @@
     );
   }
 
+  function isSubjectRouteUrlValue(urlValue) {
+    if (urlValue == null) {
+      return false;
+    }
+    try {
+      const parsed = new URL(String(urlValue), window.location.origin);
+      return isSubjectRoutePath(parsed.pathname);
+    } catch (_error) {
+      return isSubjectRoutePath(String(urlValue));
+    }
+  }
+
   function maybeRedirectSubjectRouteToHome() {
     if (!isSubjectRoutePath(window.location.pathname)) {
       return false;
@@ -77,6 +89,53 @@
     const destination = "/legacy-site/old-home.html#colors";
     window.location.replace(destination);
     return true;
+  }
+
+  let historyGuardInstalled = false;
+  function ensureSubjectNavigationGuard() {
+    if (historyGuardInstalled) {
+      return;
+    }
+    historyGuardInstalled = true;
+
+    const destination = "/legacy-site/old-home.html#colors";
+    const redirectToSubjects = () => {
+      if (window.location.pathname === "/legacy-site/old-home.html" && window.location.hash === "#colors") {
+        return;
+      }
+      window.location.replace(destination);
+    };
+
+    const blockSubjectNavigation = (urlValue) => {
+      if (!isSubjectRouteUrlValue(urlValue)) {
+        return false;
+      }
+      redirectToSubjects();
+      return true;
+    };
+
+    const nativePushState = window.history.pushState.bind(window.history);
+    const nativeReplaceState = window.history.replaceState.bind(window.history);
+
+    window.history.pushState = function guardedPushState(state, title, url) {
+      if (blockSubjectNavigation(url)) {
+        return;
+      }
+      return nativePushState(state, title, url);
+    };
+
+    window.history.replaceState = function guardedReplaceState(state, title, url) {
+      if (blockSubjectNavigation(url)) {
+        return;
+      }
+      return nativeReplaceState(state, title, url);
+    };
+
+    window.addEventListener("popstate", () => {
+      if (isSubjectRoutePath(window.location.pathname)) {
+        redirectToSubjects();
+      }
+    });
   }
 
   function isLandingPage() {
@@ -157,6 +216,29 @@
 
   function isSubjectCardActionElement(element) {
     return getSubjectCardActionElement(element) instanceof HTMLElement;
+  }
+
+  const SUBJECT_CARD_REGION_SELECTOR = [
+    '[data-framer-name*="pickcolor" i]',
+    '[data-framer-name*="pick-color" i]',
+    '[data-framer-name*="pick colour" i]',
+    '[data-framer-name*="cards-content" i]',
+    '[data-framer-name*="cards-component" i]'
+  ].join(",");
+
+  function isInsideSubjectCardRegion(element) {
+    if (!(element instanceof Element)) {
+      return false;
+    }
+    return Boolean(element.closest(SUBJECT_CARD_REGION_SELECTOR));
+  }
+
+  function stopEventCompletely(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === "function") {
+      event.stopImmediatePropagation();
+    }
   }
 
   function redirectTop() {
@@ -1365,6 +1447,7 @@
   }
 
   function runPatchOnce() {
+    ensureSubjectNavigationGuard();
     ensureSubjectCardLinksBlockedStyle();
 
     document.querySelectorAll(`${INTRO_ROOT_SELECTOR} a, ${INTRO_ROOT_SELECTOR} button, ${INTRO_ROOT_SELECTOR} [role='button']`).forEach((node) => {
@@ -1659,25 +1742,41 @@
       window.setTimeout(runPatchOnce, 360);
 
       const actionElement = target.closest("a,button,[role='button'],[data-nested-link][href]");
+      if (isInsideSubjectCardRegion(target)) {
+        stopEventCompletely(event);
+        return;
+      }
       if (!actionElement) {
         return;
       }
       if (isSubjectCardActionElement(actionElement)) {
-        event.preventDefault();
-        event.stopPropagation();
+        stopEventCompletely(event);
         return;
       }
       if (!isFormCtaElement(actionElement)) {
         return;
       }
 
-      event.preventDefault();
-      event.stopPropagation();
+      stopEventCompletely(event);
       forceConfirmHref(actionElement);
       redirectTop();
     },
     true
   );
+
+  const swallowSubjectRegionEvent = (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+    if (!isInsideSubjectCardRegion(target)) {
+      return;
+    }
+    stopEventCompletely(event);
+  };
+  ["pointerdown", "mousedown", "touchstart"].forEach((eventName) => {
+    document.addEventListener(eventName, swallowSubjectRegionEvent, true);
+  });
 
   let patchScheduled = false;
   function schedulePatch() {
@@ -1709,6 +1808,8 @@
   if (maybeRedirectSubjectRouteToHome()) {
     return;
   }
+
+  ensureSubjectNavigationGuard();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
